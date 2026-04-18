@@ -28,6 +28,14 @@ public class LaunchConfigHandler implements RequestHandler<APIGatewayV2HTTPEvent
             String method = event.getRequestContext().getHttp().getMethod();
             logger.info("HTTP Method: " + method);
 
+            if (method == null) {
+                logger.severe("ERRO: O método HTTP chegou como nulo. Verifique a integração do API Gateway.");
+                return APIGatewayV2HTTPResponse.builder()
+                        .withStatusCode(400)
+                        .withBody("{\"error\": \"Method not provided\"}")
+                        .build();
+            }
+
             // Handle preflight OPTIONS
             if ("OPTIONS".equalsIgnoreCase(method)) {
                 logger.info("INFO: handling OPTIONS");
