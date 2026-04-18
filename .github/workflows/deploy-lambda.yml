@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'launch-config-module/**' # Opcional: só dispara se mudar algo nesta pasta
 
 permissions:
   id-token: write
