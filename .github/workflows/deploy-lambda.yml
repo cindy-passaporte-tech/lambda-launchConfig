@@ -1,0 +1,40 @@
+name: Deploy LaunchConfig Lambda
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'launch-config-module/**' # Opcional: só dispara se mudar algo nesta pasta
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: corretto
+
+      - name: Build JAR
+        run: mvn clean package -DskipTests # Ajuste o caminho se estiver em subpastas
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::046003573216:role/Role-GitHub-Deploy-Lambda
+          aws-region: us-east-1
+
+      - name: Deploy to Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name LaunchConfig \
+            --zip-file fileb://target/LaunchConfigHandler.jar
